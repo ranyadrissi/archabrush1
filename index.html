@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArchaBrush</title>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+            background: #000;
+            color: #f5f5f7;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.47059;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 44px;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: saturate(180%) blur(20px);
+            z-index: 9999;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-content {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 0 22px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-title {
+            font-size: 21px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+        }
+
+        .nav-links a {
+            font-size: 12px;
+            color: #f5f5f7;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 1;
+        }
+
+        /* Hero */
+        .hero {
+            height: 692px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 20px;
+            margin-top: 44px;
+            background:
+             linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.9)),
+             url("images/brush-hero.jpg") center / cover no-repeat;
+
+        }
+
+        .hero-eyebrow {
+            font-size: 17px;
+            line-height: 1.23536;
+            font-weight: 400;
+            letter-spacing: 0.012em;
+            color: #f5f5f7;
+            margin-bottom: 4px;
+        }
+
+        .hero-title {
+            font-size: 56px;
+            line-height: 1.07143;
+            font-weight: 600;
+            letter-spacing: -0.005em;
+            margin-bottom: 6px;
+        }
+
+        .hero-subtitle {
+            font-size: 28px;
+            line-height: 1.14286;
+            font-weight: 400;
+            letter-spacing: 0.007em;
+            color: #f5f5f7;
+        }
+
+        /* Large Text Section */
+        .large-text-section {
+            padding: 100px 20px;
+            background: #000;
+        }
+
+        .large-text-content {
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        .large-title {
+            font-size: 48px;
+            line-height: 1.08349;
+            font-weight: 600;
+            letter-spacing: -0.003em;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .large-description {
+            font-size: 21px;
+            line-height: 1.381;
+            font-weight: 400;
+            letter-spacing: 0.011em;
+            text-align: center;
+            color: #a1a1a6;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* 3D Model Section */
+        .model-section {
+            padding: 80px 20px;
+            background: #000;
+        }
+
+        .model-container {
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        .model-title {
+            font-size: 40px;
+            line-height: 1.1;
+            font-weight: 600;
+            letter-spacing: 0;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .model-viewer {
+            width: 100%;
+            height: 600px;
+            background: radial-gradient(circle at center, #1d1d1f 0%, #000 100%);
+            border-radius: 18px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        model-viewer {
+            width: 100%;
+            height: 100%;
+            border-radius: 18px;
+        }
+
+        model-viewer::part(default-progress-bar) {
+            display: none;
+        }
+
+        .model-placeholder {
+            text-align: center;
+            color: #86868b;
+        }
+
+        .model-placeholder-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .model-placeholder-text {
+            font-size: 17px;
+            font-weight: 400;
+        }
+
+        .model-controls {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .model-hint {
+            font-size: 14px;
+            color: #86868b;
+            font-weight: 400;
+        }
+
+        /* Features Grid */
+        .features-section {
+            padding: 100px 20px;
+            background: #000;
+        }
+
+        .features-container {
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .feature-item {
+            background: #1d1d1f;
+            border-radius: 18px;
+            padding: 50px 40px;
+            text-align: center;
+        }
+
+        .feature-label {
+            font-size: 12px;
+            line-height: 1.33337;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            color: #f56b00;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .feature-title {
+            font-size: 24px;
+            line-height: 1.16667;
+            font-weight: 600;
+            letter-spacing: 0.009em;
+            margin-bottom: 12px;
+        }
+
+        .feature-description {
+            font-size: 14px;
+            line-height: 1.42859;
+            font-weight: 400;
+            letter-spacing: -0.016em;
+            color: #a1a1a6;
+        }
+
+        /* Demo Section */
+        .demo-section {
+            padding: 100px 20px;
+            background: #000;
+        }
+
+        .demo-container {
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        .demo-title {
+            font-size: 40px;
+            line-height: 1.1;
+            font-weight: 600;
+            letter-spacing: 0;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .demo-subtitle {
+            font-size: 21px;
+            line-height: 1.381;
+            font-weight: 400;
+            letter-spacing: 0.011em;
+            text-align: center;
+            color: #a1a1a6;
+            margin-bottom: 60px;
+        }
+
+        .demo-box {
+            background: #1d1d1f;
+            border-radius: 18px;
+            padding: 60px;
+        }
+
+        .brush-canvas {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 100%);
+            border-radius: 12px;
+            position: relative;
+            cursor: crosshair;
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+
+        .pressure-readout {
+            text-align: center;
+        }
+
+        .pressure-label {
+            font-size: 12px;
+            line-height: 1.33337;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            color: #a1a1a6;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .pressure-bar {
+            width: 100%;
+            max-width: 400px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin: 0 auto 20px;
+            overflow: hidden;
+        }
+
+        .pressure-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #30d158 0%, #ffd60a 50%, #ff453a 100%);
+            transition: width 0.1s ease;
+        }
+
+        .pressure-number {
+            font-size: 64px;
+            line-height: 1.0625;
+            font-weight: 600;
+            letter-spacing: -0.009em;
+            margin-bottom: 8px;
+        }
+
+        .pressure-status-text {
+            font-size: 17px;
+            line-height: 1.23536;
+            font-weight: 400;
+            letter-spacing: -0.022em;
+            color: #a1a1a6;
+        }
+        /* Prototype Steps */
+        .steps-section {
+         padding: 120px 20px;
+            }
+
+        .steps-container {
+            max-width: 980px;
+            margin: auto;
+            }   
+
+        .steps-title {
+            text-align: center;
+            font-size: 40px;
+            margin-bottom: 80px;
+            }
+
+        .step {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 80px;
+            }
+
+        .step img {
+            width: 100%;
+            border-radius: 18px;
+            }
+
+
+        /* Specs Section */
+        .specs-section {
+            padding: 100px 20px;
+            background: #000;
+        }
+
+        .specs-container {
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        .specs-title {
+            font-size: 40px;
+            line-height: 1.1;
+            font-weight: 600;
+            letter-spacing: 0;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 18px;
+            overflow: hidden;
+        }
+
+        .spec-cell {
+            background: #1d1d1f;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .spec-name {
+            font-size: 12px;
+            line-height: 1.33337;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+            color: #a1a1a6;
+            margin-bottom: 8px;
+        }
+
+        .spec-detail {
+            font-size: 21px;
+            line-height: 1.381;
+            font-weight: 600;
+            letter-spacing: 0.011em;
+        }
+
+        /* Team Section */
+        .team-section {
+            padding: 120px 20px;
+            text-align: center;
+        }
+
+        .team-container {
+            max-width: 980px;
+            margin: auto;
+        }
+
+        .team-title {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+
+        .team-subtitle {
+            font-size: 21px;
+            color: #a1a1a6;
+            margin-bottom: 60px;
+        }
+
+        .team-section img {
+            width: 100%;
+            border-radius: 24px;
+        }
+
+
+        /* Footer */
+        .footer {
+            padding: 80px 20px 40px;
+            background: #000;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .footer-content {
+            max-width: 980px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .footer-title {
+            font-size: 17px;
+            line-height: 1.23536;
+            font-weight: 600;
+            letter-spacing: -0.022em;
+            margin-bottom: 8px;
+        }
+
+        .footer-text {
+            font-size: 12px;
+            line-height: 1.33337;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+            color: #a1a1a6;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            .hero-title {
+                font-size: 40px;
+            }
+            .hero-subtitle {
+                font-size: 21px;
+            }
+            .large-title {
+                font-size: 32px;
+            }
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            .specs-grid {
+                grid-template-columns: 1fr;
+            }
+            .demo-box {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-content">
+            <div class="nav-title">ArchaBrush</div>
+            <div class="nav-links">
+                <a href="#overview">Overview</a>
+                <a href="#model">Design</a>
+                <a href="#features">Features</a>
+                <a href="#demo">Demo</a>
+                <a href="#specs">Tech Specs</a>
+                <a href="#team">Team</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h2 class="hero-eyebrow">ArchaBrush</h2>
+        <h1 class="hero-title">Precision meets preservation.</h1>
+        <p class="hero-subtitle">Advanced pressure sensing for archaeological excellence.</p>
+    </section>
+
+    <section class="large-text-section" id="overview">
+        <div class="large-text-content">
+            <h2 class="large-title">Every artifact tells a story. Every pressure matters.</h2>
+            <p class="large-description">ArchaBrush brings cutting-edge pressure sensing technology to archaeological excavation, helping preserve irreplaceable artifacts through real-time force monitoring and intelligent feedback.</p>
+        </div>
+    </section>
+
+    <section class="model-section" id="model">
+        <div class="model-container">
+            <h2 class="model-title">Designed for the field. Built to last.</h2>
+            <div class="model-viewer">
+                <model-viewer 
+                    src="archabrush.glb" 
+                    alt="ArchaBrush 3D Model"
+                    camera-controls 
+                    auto-rotate
+                    auto-rotate-delay="0"
+                    rotation-per-second="30deg"
+                    shadow-intensity="1"
+                    exposure="1"
+                    camera-orbit="45deg 75deg 2.5m"
+                    min-camera-orbit="auto auto 1m"
+                    max-camera-orbit="auto auto 5m">
+                    
+                    <div slot="progress-bar" style="display: none;"></div>
+                    
+                    
+                </model-viewer>
+            </div>
+            <div class="model-controls">
+                <p class="model-hint">Drag to rotate • Scroll to zoom • Two-finger drag to pan</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="features-section" id="features">
+        <div class="features-container">
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-label">Sensor</div>
+                    <h3 class="feature-title">Real-Time Monitoring</h3>
+                    <p class="feature-description">Instant pressure feedback with 100Hz sampling rate ensures precise force control.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-label">Precision</div>
+                    <h3 class="feature-title">0.1 kPa Resolution</h3>
+                    <p class="feature-description">Piezoelectric sensors detect the smallest pressure variations.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-label">Battery</div>
+                    <h3 class="feature-title">40+ Hour Runtime</h3>
+                    <p class="feature-description">All-day battery life for extended field operations.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-label">Durability</div>
+                    <h3 class="feature-title">IP67 Rated</h3>
+                    <p class="feature-description">Dust-tight and waterproof for harsh excavation environments.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-label">Connectivity</div>
+                    <h3 class="feature-title">Bluetooth 5.0</h3>
+                    <p class="feature-description">Wireless data logging and analysis capabilities.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-label">Ergonomics</div>
+                    <h3 class="feature-title">85g Weight</h3>
+                    <p class="feature-description">Lightweight design reduces hand fatigue during extended use.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="demo-section" id="demo">
+        <div class="demo-container">
+            <h2 class="demo-title">Experience the technology</h2>
+            <p class="demo-subtitle">Try the pressure sensing simulation</p>
+            <div class="demo-box">
+                <div class="brush-canvas" id="brushCanvas"></div>
+                <div class="pressure-readout">
+                    <div class="pressure-label">Pressure Reading</div>
+                    <div class="pressure-bar">
+                        <div class="pressure-fill" id="pressureFill"></div>
+                    </div>
+                    <div class="pressure-number" id="pressureNumber">0.0</div>
+                    <div class="pressure-status-text" id="pressureStatus">Ready</div>
+                </div>
+            </div>
+        </div>
+    </section>
+<section class="steps-section" id="steps">
+    <div class="steps-container">
+        <h2 class="steps-title">How We Built the Prototype</h2>
+
+        <div class="step">
+            <img src="images/step1.jpg">
+            <div>
+                <h3>1. Concept & Planning</h3>
+                <p>Brush design and pressure limits defined.</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <img src="images/step2.jpg">
+            <div>
+                <h3>2. Sensor Integration</h3>
+                <p>Electronics embedded inside the handle.</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <img src="images/step3.jpg">
+            <div>
+                <h3>3. Testing & Calibration</h3>
+                <p>Prototype tested and tuned for accuracy.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <section class="specs-section" id="specs">
+        <div class="specs-container">
+            <h2 class="specs-title">Technical Specifications</h2>
+            <div class="specs-grid">
+                <div class="spec-cell">
+                    <div class="spec-name">Sensor Type</div>
+                    <div class="spec-detail">Piezoelectric</div>
+                </div>
+                <div class="spec-cell">
+                    <div class="spec-name">Resolution</div>
+                    <div class="spec-detail">0.1 kPa</div>
+                </div>
+                <div class="spec-cell">
+                    <div class="spec-name">Response Time</div>
+                    <div class="spec-detail">< 10ms</div>
+                </div>
+                <div class="spec-cell">
+                    <div class="spec-name">Pressure Range</div>
+                    <div class="spec-detail">0-50 kPa</div>
+                </div>
+                <div class="spec-cell">
+                    <div class="spec-name">Battery Life</div>
+                    <div class="spec-detail">40+ hours</div>
+                </div>
+                <div class="spec-cell">
+                    <div class="spec-name">Connectivity</div>
+                    <div class="spec-detail">Bluetooth 5.0</div>
+                </div>
+                <div class="spec-cell">
+                    <div class="spec-name">Weight</div>
+                    <div class="spec-detail">85g</div>
+                </div>
+                <div class="spec-cell">
+                    <div class="spec-name">Rating</div>
+                    <div class="spec-detail">IP67</div>
+                </div>
+                <div class="spec-cell">
+                    <div class="spec-name">Sampling Rate</div>
+                    <div class="spec-detail">100Hz</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="team-section" id="team">
+    <div class="team-container">
+        <h2 class="team-title">The MindCraft Team</h2>
+        <p class="team-subtitle">
+            Experienced members and new innovators working together.
+        </p>
+        <img src="images/team-mindcraft.jpg">
+    </div>
+</section>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-title">ArchaBrush</div>
+            <p class="footer-text">Prototype demonstration for research and educational purposes.</p>
+            <p class="footer-text" style="margin-top: 12px;">© 2024 ArchaBrush Development Team</p>
+        </div>
+    </footer>
+
+    <script>
+        const canvas = document.getElementById('brushCanvas');
+        const fill = document.getElementById('pressureFill');
+        const number = document.getElementById('pressureNumber');
+        const status = document.getElementById('pressureStatus');
+        
+        let pressing = false;
+        let currentPressure = 0;
+        let targetPressure = 0;
+
+        canvas.addEventListener('mousedown', start);
+        canvas.addEventListener('mouseup', stop);
+        canvas.addEventListener('mouseleave', stop);
+        canvas.addEventListener('mousemove', move);
+
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            start(e);
+        });
+        canvas.addEventListener('touchend', stop);
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            move(e);
+        });
+
+        function start(e) {
+            pressing = true;
+            updatePressure(e);
+        }
+
+        function stop() {
+            pressing = false;
+            targetPressure = 0;
+        }
+
+        function move(e) {
+            if (pressing) {
+                updatePressure(e);
+            }
+        }
+
+        function updatePressure(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX || e.touches[0].clientX) - rect.left;
+            const y = (e.clientY || e.touches[0].clientY) - rect.top;
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const distance = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
+            const maxDistance = Math.sqrt(Math.pow(centerX, 2) + Math.pow(centerY, 2));
+            
+            targetPressure = 5 + (distance / maxDistance) * 30;
+            
+            addStroke(x, y);
+        }
+
+        function addStroke(x, y) {
+            const dot = document.createElement('div');
+            dot.style.position = 'absolute';
+            dot.style.left = x + 'px';
+            dot.style.top = y + 'px';
+            dot.style.width = '24px';
+            dot.style.height = '24px';
+            dot.style.borderRadius = '50%';
+            dot.style.transform = 'translate(-50%, -50%)';
+            dot.style.pointerEvents = 'none';
+            
+            if (currentPressure < 15) {
+                dot.style.background = 'radial-gradient(circle, rgba(48, 209, 88, 0.6) 0%, transparent 70%)';
+            } else if (currentPressure < 25) {
+                dot.style.background = 'radial-gradient(circle, rgba(255, 214, 10, 0.6) 0%, transparent 70%)';
+            } else {
+                dot.style.background = 'radial-gradient(circle, rgba(255, 69, 58, 0.6) 0%, transparent 70%)';
+            }
+            
+            canvas.appendChild(dot);
+            
+            setTimeout(() => {
+                dot.style.transition = 'opacity 0.6s, transform 0.6s';
+                dot.style.opacity = '0';
+                dot.style.transform = 'translate(-50%, -50%) scale(2.5)';
+            }, 10);
+            
+            setTimeout(() => dot.remove(), 700);
+        }
+
+        function animate() {
+            currentPressure += (targetPressure - currentPressure) * 0.12;
+            
+            const percent = Math.min((currentPressure / 35) * 100, 100);
+            fill.style.width = percent + '%';
+            number.textContent = currentPressure.toFixed(1);
+            
+            if (currentPressure < 15) {
+                status.textContent = 'Optimal pressure';
+                status.style.color = '#30d158';
+            } else if (currentPressure < 25) {
+                status.textContent = 'Elevated pressure';
+                status.style.color = '#ffd60a';
+            } else {
+                status.textContent = 'Critical pressure';
+                status.style.color = '#ff453a';
+            }
+            
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
