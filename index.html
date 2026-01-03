@@ -25,6 +25,29 @@
             line-height: 1.47059;
         }
 
+        /* Scroll Animation Classes */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .scale-in {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .scale-in.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
         /* Navigation */
         .nav {
             position: fixed;
@@ -72,7 +95,8 @@
 
         /* Hero */
         .hero {
-            height: 692px;
+            height: 100vh;
+            min-height: 692px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -80,10 +104,24 @@
             text-align: center;
             padding: 0 20px;
             margin-top: 44px;
-            background:
-             linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.9)),
-             url("images/brush-hero.jpg") center / cover no-repeat;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            position: relative;
+            overflow: hidden;
+        }
 
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.5) 100%);
+        }
+
+        .hero > * {
+            position: relative;
+            z-index: 1;
         }
 
         .hero-eyebrow {
@@ -93,6 +131,7 @@
             letter-spacing: 0.012em;
             color: #f5f5f7;
             margin-bottom: 4px;
+            animation: fadeInUp 0.8s ease-out 0.2s backwards;
         }
 
         .hero-title {
@@ -101,6 +140,7 @@
             font-weight: 600;
             letter-spacing: -0.005em;
             margin-bottom: 6px;
+            animation: fadeInUp 0.8s ease-out 0.4s backwards;
         }
 
         .hero-subtitle {
@@ -109,6 +149,18 @@
             font-weight: 400;
             letter-spacing: 0.007em;
             color: #f5f5f7;
+            animation: fadeInUp 0.8s ease-out 0.6s backwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Large Text Section */
@@ -192,11 +244,6 @@
             opacity: 0.3;
         }
 
-        .model-placeholder-text {
-            font-size: 17px;
-            font-weight: 400;
-        }
-
         .model-controls {
             margin-top: 20px;
             text-align: center;
@@ -230,6 +277,11 @@
             border-radius: 18px;
             padding: 50px 40px;
             text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-5px);
         }
 
         .feature-label {
@@ -351,34 +403,58 @@
             letter-spacing: -0.022em;
             color: #a1a1a6;
         }
+
         /* Prototype Steps */
         .steps-section {
-         padding: 120px 20px;
-            }
+            padding: 120px 20px;
+        }
 
         .steps-container {
             max-width: 980px;
             margin: auto;
-            }   
+        }   
 
         .steps-title {
             text-align: center;
             font-size: 40px;
             margin-bottom: 80px;
-            }
+        }
 
         .step {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 40px;
             margin-bottom: 80px;
-            }
+            align-items: center;
+        }
 
-        .step img {
+        .step-img {
             width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, #1d1d1f 0%, #2d2d2f 100%);
             border-radius: 18px;
-            }
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #86868b;
+            font-size: 48px;
+            transition: transform 0.3s ease;
+        }
 
+        .step-img:hover {
+            transform: scale(1.02);
+        }
+
+        .step h3 {
+            font-size: 28px;
+            margin-bottom: 16px;
+        }
+
+        .step p {
+            font-size: 17px;
+            color: #a1a1a6;
+            line-height: 1.5;
+        }
 
         /* Specs Section */
         .specs-section {
@@ -453,11 +529,17 @@
             margin-bottom: 60px;
         }
 
-        .team-section img {
+        .team-img {
             width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, #1d1d1f 0%, #2d2d2f 100%);
             border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #86868b;
+            font-size: 64px;
         }
-
 
         /* Footer */
         .footer {
@@ -511,6 +593,9 @@
             .demo-box {
                 padding: 30px;
             }
+            .step {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -535,14 +620,14 @@
         <p class="hero-subtitle">Advanced pressure sensing for archaeological excellence.</p>
     </section>
 
-    <section class="large-text-section" id="overview">
+    <section class="large-text-section fade-in" id="overview">
         <div class="large-text-content">
             <h2 class="large-title">Every artifact tells a story. Every pressure matters.</h2>
             <p class="large-description">ArchaBrush brings cutting-edge pressure sensing technology to archaeological excavation, helping preserve irreplaceable artifacts through real-time force monitoring and intelligent feedback.</p>
         </div>
     </section>
 
-    <section class="model-section" id="model">
+    <section class="model-section scale-in" id="model">
         <div class="model-container">
             <h2 class="model-title">Designed for the field. Built to last.</h2>
             <div class="model-viewer">
@@ -558,10 +643,7 @@
                     camera-orbit="45deg 75deg 2.5m"
                     min-camera-orbit="auto auto 1m"
                     max-camera-orbit="auto auto 5m">
-                    
                     <div slot="progress-bar" style="display: none;"></div>
-                    
-                    
                 </model-viewer>
             </div>
             <div class="model-controls">
@@ -570,7 +652,7 @@
         </div>
     </section>
 
-    <section class="features-section" id="features">
+    <section class="features-section fade-in" id="features">
         <div class="features-container">
             <div class="features-grid">
                 <div class="feature-item">
@@ -607,7 +689,7 @@
         </div>
     </section>
 
-    <section class="demo-section" id="demo">
+    <section class="demo-section fade-in" id="demo">
         <div class="demo-container">
             <h2 class="demo-title">Experience the technology</h2>
             <p class="demo-subtitle">Try the pressure sensing simulation</p>
@@ -624,37 +706,38 @@
             </div>
         </div>
     </section>
-<section class="steps-section" id="steps">
-    <div class="steps-container">
-        <h2 class="steps-title">How We Built the Prototype</h2>
 
-        <div class="step">
-            <img src="images/step1.jpg">
-            <div>
-                <h3>1. Concept & Planning</h3>
-                <p>Brush design and pressure limits defined.</p>
+    <section class="steps-section fade-in" id="steps">
+        <div class="steps-container">
+            <h2 class="steps-title">How We Built the Prototype</h2>
+
+            <div class="step">
+                <div class="step-img">📋</div>
+                <div>
+                    <h3>1. Concept & Planning</h3>
+                    <p>Brush design and pressure limits defined.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-img">⚙️</div>
+                <div>
+                    <h3>2. Sensor Integration</h3>
+                    <p>Electronics embedded inside the handle.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-img">🔬</div>
+                <div>
+                    <h3>3. Testing & Calibration</h3>
+                    <p>Prototype tested and tuned for accuracy.</p>
+                </div>
             </div>
         </div>
+    </section>
 
-        <div class="step">
-            <img src="images/step2.jpg">
-            <div>
-                <h3>2. Sensor Integration</h3>
-                <p>Electronics embedded inside the handle.</p>
-            </div>
-        </div>
-
-        <div class="step">
-            <img src="images/step3.jpg">
-            <div>
-                <h3>3. Testing & Calibration</h3>
-                <p>Prototype tested and tuned for accuracy.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-    <section class="specs-section" id="specs">
+    <section class="specs-section fade-in" id="specs">
         <div class="specs-container">
             <h2 class="specs-title">Technical Specifications</h2>
             <div class="specs-grid">
@@ -697,15 +780,16 @@
             </div>
         </div>
     </section>
-    <section class="team-section" id="team">
-    <div class="team-container">
-        <h2 class="team-title">The MindCraft Team</h2>
-        <p class="team-subtitle">
-            Experienced members and new innovators working together.
-        </p>
-        <img src="images/team-mindcraft.jpg">
-    </div>
-</section>
+
+    <section class="team-section fade-in" id="team">
+        <div class="team-container">
+            <h2 class="team-title">The MindCraft Team</h2>
+            <p class="team-subtitle">
+                Experienced members and new innovators working together.
+            </p>
+            <div class="team-img">👥</div>
+        </div>
+    </section>
 
     <footer class="footer">
         <div class="footer-content">
@@ -716,6 +800,28 @@
     </footer>
 
     <script>
+        // Scroll Animation Observer
+        const observerOptions = {
+            threshold: 0.15,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all animated elements
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.fade-in, .scale-in').forEach(el => {
+                observer.observe(el);
+            });
+        });
+
+        // Pressure Demo
         const canvas = document.getElementById('brushCanvas');
         const fill = document.getElementById('pressureFill');
         const number = document.getElementById('pressureNumber');
